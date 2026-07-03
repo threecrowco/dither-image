@@ -1,6 +1,6 @@
 {
   "name": "@threecrowco/dither-image",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Hover-triggered ordered-dithering (halftone) effect for images. Raw WebGL, zero dependencies. Ported from darkroomengineering/spargo.",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -18,7 +18,8 @@
   ],
   "scripts": {
     "build": "tsup",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepare": "tsup"
   },
   "peerDependencies": {
     "react": ">=18",
