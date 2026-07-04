@@ -48,6 +48,8 @@ export type DitherImageProps = {
   /** Crossfade duration in ms. */
   duration?: number;
   className?: string;
+  /** When true, the image starts dithered and resolves to sharp on hover/focus (default is sharp-at-rest, dithered-on-hover). */
+  invert?: boolean;
 };
 
 // ---------------------------------------------------------------------------
@@ -80,6 +82,7 @@ export function DitherImage({
   color = [1, 1, 1],
   duration = 250,
   className,
+  invert = false,
 }: DitherImageProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   // Refs, not useState: these values change every animation frame, and we
@@ -87,8 +90,8 @@ export function DitherImage({
   // that through React state would trigger a re-render (and a shader
   // re-setup, since this effect depends on nothing that changes per-frame)
   // 60 times a second for no benefit.
-  const targetRef = useRef(0); // where progress is animating *to* (0 or 1)
-  const progressRef = useRef(0); // current animated progress, fed to the shader
+  const targetRef = useRef(invert ? 1 : 0); // where progress is animating *to* (0 or 1)
+  const progressRef = useRef(invert ? 1 : 0); // current animated progress, fed to the shader
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -324,8 +327,8 @@ export function DitherImage({
     // Mouse hover *and* keyboard focus trigger the same effect — this is
     // what makes the interaction reachable without a mouse (see the
     // tabIndex={0} + role="img" on the <canvas> below).
-    const enter = () => setTarget(1);
-    const leave = () => setTarget(0);
+    const enter = () => setTarget(invert ? 0 : 1);
+    const leave = () => setTarget(invert ? 1 : 0);
     canvas.addEventListener("mouseenter", enter);
     canvas.addEventListener("mouseleave", leave);
     canvas.addEventListener("focus", enter);
@@ -357,7 +360,7 @@ export function DitherImage({
       gl.deleteTexture(texture);
       gl.deleteTexture(matrixTexture);
     };
-  }, [src, width, height, mode, granularity, color, duration]);
+  }, [src, width, height, mode, granularity, color, duration, invert]);
 
   // We render a <canvas>, not an <img>/<Image>, because we need direct
   // pixel control for the shader. role="img" + aria-label stand in for the
